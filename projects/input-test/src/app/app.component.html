@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      <form class="p-5" [formGroup]="formValidator">
+        <div class="mb-3">
+          <label for="numbers" class="form-label">Solo numeros</label>
+          <input
+            type="text"
+            class="form-control"
+            id="numbers"
+            inputController="number"
+            formControlName="number"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="onlyLetters" class="form-label">Solo texto</label>
+          <input
+            type="text"
+            class="form-control"
+            id="onlyLetters"
+            inputController="only-letters"
+            formControlName="onlyText"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="alphanumeric" class="form-label">Alfanumerico</label>
+          <input
+            type="text"
+            class="form-control"
+            id="alphanumeric"
+            inputController="alphanumeric"
+            formControlName="alpha"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"                        
+            formControlName="email"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">          
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
