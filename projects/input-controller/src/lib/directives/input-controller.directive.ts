@@ -1,34 +1,28 @@
-import { Directive, ElementRef, HostListener, Input, input, OnInit } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, input, OnInit, Optional, Self } from '@angular/core';
 import { ControllerType } from '../intefaces/controller-type.type';
 import { InputControllerService } from '../services/input-controller.service';
-import { FormControl } from '@angular/forms';
+import { FormControl, NgControl } from '@angular/forms';
 
 @Directive({
   selector: '[inputController]',
   standalone: true,
 })
-export class InputControllerDirective implements OnInit{    
+export class InputControllerDirective implements OnInit{
   public isToPreventDefaultEvent: boolean = false;
-  public formControl = input<FormControl>();
-  public inputController = input<ControllerType>();  
+  public inputController = input<ControllerType>();
 
-  constructor(    
-    private elementRef: ElementRef,    
-    private inputControllerServ: InputControllerService
+  constructor(
+    private elementRef: ElementRef,
+    private inputControllerServ: InputControllerService,
+    @Optional() @Self() private formControl: NgControl
   ) {}
 
   ngOnInit():void{
-    this.isToPreventDefaultEvent = this.inputControllerServ.isToPreventDefaultEvent(this.inputController() || 'alphanumeric');    
-
-    if (this.formControl() && this.formControl() != undefined) {
-      this.formControl()?.valueChanges.subscribe((value: string) => {
-        this.sanitizeInput(this.elementRef.nativeElement as HTMLInputElement);
-      });
-    }
+    this.isToPreventDefaultEvent = this.inputControllerServ.isToPreventDefaultEvent(this.inputController() || 'alphanumeric');
   }
-  
+
   @HostListener('input', ['$event'])
-  validateInput(event: InputEvent): void {    
+  validateInput(event: InputEvent): void {
     const value = (event as InputEvent).data;
     const inputElement = event.target as HTMLInputElement;
     let regex: RegExp = this.inputControllerServ.getMask(this.inputController() || 'alphanumeric');
@@ -44,56 +38,55 @@ export class InputControllerDirective implements OnInit{
   }
 
   @HostListener('paste', ['$event'])
-  onPaste(event: ClipboardEvent): void {                
-    const inputElement = this.elementRef.nativeElement as HTMLInputElement;    
+  onPaste(): void {
+    const inputElement = this.elementRef.nativeElement as HTMLInputElement;
     setTimeout(() => {
       this.clearAfterPasteOrFocusOut(inputElement);
     }, 10);
   }
 
   @HostListener('change', ['$event'])
-  onChange(event: Event): void {    
+  onChange(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     this.clearAfterPasteOrFocusOut(inputElement);
   }
 
   private preventDefaultEvent(value: string, event: InputEvent, regex: RegExp){
     if (!regex.test(value)) {
-      event.preventDefault();      
+      event.preventDefault();
       (event.target as HTMLInputElement).value = (event.target as HTMLInputElement).value.slice(0, -1);
-    }    
+    }
   }
 
-  private clearAfterPasteOrFocusOut(input: HTMLInputElement):void{        
-    const validationRegex: RegExp = this.inputControllerServ.getMask(this.inputController() || 'alphanumeric');    
-    const isAllowedValue = validationRegex.test(input.value);    
-    
-    if(!isAllowedValue) this.sanitizeInput(input);  
+  private clearAfterPasteOrFocusOut(input: HTMLInputElement):void{
+    const validationRegex: RegExp = this.inputControllerServ.getMask(this.inputController() || 'alphanumeric');
+    const isAllowedValue = validationRegex.test(input.value);
+
+    if(!isAllowedValue) this.sanitizeInput(input);
   }
 
-  sanitizeInput(input: HTMLInputElement){    
+  sanitizeInput(input: HTMLInputElement){
     const originalValue = input.value;
     const regex: RegExp = this.inputControllerServ.getMaskToCleanInput(this.inputController() || 'alphanumeric');
 
+    if(this.inputController() == 'financial'){
+      const sanitizeValue = originalValue.replace(regex, '');
 
-    
-    if(this.inputController() == 'financial'){      
-      const sanitizeValue = originalValue.replace(regex, '');      
-      
-      if(sanitizeValue && sanitizeValue.length > 0){        
-        const onlyNumbers = sanitizeValue.replaceAll(',', '').trim();        
+      if(sanitizeValue && sanitizeValue.length > 0){
+        const onlyNumbers = sanitizeValue.replaceAll(',', '').trim();
         const decimals = (parseFloat(onlyNumbers)).toFixed(2);
-        input.value = this.addThousandSeparators(decimals);
-      }else{        
+        // input.value = this.addThousandSeparators(decimals);
+        this.formControl.control?.setValue(decimals);
+      }else{
         input.value = '';
       }
     }else{
       const sanitizedText = originalValue.replace(regex, '');
-      input.value = sanitizedText.trim();      
+      input.value = sanitizedText.trim();
     }
   }
 
-  private financialFormat(input: HTMLInputElement, event: InputEvent):void{    
+  private financialFormat(input: HTMLInputElement, event: InputEvent):void{
     const value = input.value;
     const rawValue = value.replace(/\D/g, '');
     const regexNumber = this.inputControllerServ.getMask('number');
@@ -104,7 +97,7 @@ export class InputControllerDirective implements OnInit{
 
 
   private formatToDecimalWithCommas(value: string): string {
-    const numberValue = (parseFloat(value) / 100).toFixed(2);    
+    const numberValue = (parseFloat(value) / 100).toFixed(2);
     return this.addThousandSeparators(numberValue);
   }
 

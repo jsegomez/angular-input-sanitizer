@@ -7,9 +7,9 @@
           <input
             type="text"
             class="form-control"
-            id="numbers"
-            inputController="number" 
-            formControlName="numbers"           
+            formControlName="numbers"
+            inputController="number"
+            [formControl]="formValidator.controls.numbers"
           >
         </div>
 
@@ -18,9 +18,9 @@
           <input
             type="text"
             class="form-control"
-            id="onlyLetters"
-            inputController="only-letters"
             formControlName="onlyText"
+            inputController="only-letters"
+            [formControl]="formValidator.controls.onlyText"
           >
         </div>
 
@@ -29,9 +29,9 @@
           <input
             type="text"
             class="form-control"
-            id="alphanumeric"
+            formControlName="alpha"
+            [formControl]="formValidator.controls.alpha"
             inputController="alphanumeric"
-            formControlName="alpha"    
           >
         </div>
 
@@ -40,9 +40,9 @@
           <input
             type="text"
             class="form-control"
-            id="financial"
-            inputController="financial"
+            [formControl]="formValidator.controls.financial"
             formControlName="financial"
+            inputController="financial"
           >
         </div>
 
