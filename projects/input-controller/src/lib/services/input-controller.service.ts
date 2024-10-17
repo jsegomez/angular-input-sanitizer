@@ -17,12 +17,8 @@ export class InputControllerService {
         return /^[A-Za-z0-9\s]+$/;        
       case 'number':
         return /^[0-9]+$/;        
-      case 'phone':
-        return /^[0-9]{10}$/;
-      case 'email':
-        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;        
       case 'financial':
-        return /^[0-9.,]*$/; //TODO: pendiente por hacer        
+        return /^[0-9.,]*$/;
       default:
         return /^[A-Za-z0-9\s]+$/;        
     }
@@ -35,15 +31,11 @@ export class InputControllerService {
       case 'alphanumeric':
         return /[^A-Za-z0-9\s]/g;        
       case 'number':
-        return /[^0-9]/g;        
-      case 'phone':
-        return /^[0-9]{10}$/;//TODO: pendiente por hacer        
-      case 'email':
-        return /[^a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;        
+        return /[^0-9]/g;              
       case 'financial':
-        return /^[0-9.,]*$/; //TODO: pendiente por hacer        
+        return /[^0-9.,]/g;
       default:
-        return /^[A-Za-z0-9\s]+$/; //TODO: pendiente por hacer        
+        return /^[A-Za-z0-9\s]+$/
     }
   }
 }

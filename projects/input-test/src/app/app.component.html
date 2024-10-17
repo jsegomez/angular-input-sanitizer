@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-    <div class="col-6">
+    <div class="col-12">
       <form class="p-5" [formGroup]="formValidator">
         <div class="mb-3">
           <label for="numbers" class="form-label">Solo numeros</label>
@@ -8,8 +8,8 @@
             type="text"
             class="form-control"
             id="numbers"
-            inputController="number"
-            formControlName="number"
+            inputController="number" 
+            formControlName="numbers"           
           >
         </div>
 
@@ -31,26 +31,33 @@
             class="form-control"
             id="alphanumeric"
             inputController="alphanumeric"
-            formControlName="alpha"
+            formControlName="alpha"    
           >
         </div>
 
         <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
+          <label for="financial" class="form-label">Moneda</label>
           <input
-            type="email"
+            type="text"
             class="form-control"
-            id="email"                        
-            formControlName="email"
+            id="financial"
+            inputController="financial"
+            formControlName="financial"
           >
-        </div>
-
-        <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">          
         </div>
 
       </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <pre>
+        {{ formValidator.getRawValue() | json }}
+      </pre>
     </div>
   </div>
 </div>

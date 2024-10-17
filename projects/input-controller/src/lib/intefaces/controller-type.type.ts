@@ -1,1 +1,1 @@
-export type ControllerType = 'only-letters' | 'alphanumeric' | 'number' | 'phone' | 'email' | 'financial';
+export type ControllerType = 'only-letters' | 'alphanumeric' | 'number' | 'financial';
