@@ -24,6 +24,6 @@ export class AppComponent {
     numbers: ['', Validators.required],
     onlyText: ['', Validators.required],
     alpha: ['', Validators.required],
-    financial: ['', [Validators.required]]
+    financial: ['0.00', [Validators.required]]
   });
 }

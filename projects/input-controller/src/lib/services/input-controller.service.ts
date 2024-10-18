@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ControllerType } from '../intefaces/controller-type.type';
+import { NgControl } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -9,22 +10,22 @@ export class InputControllerService {
     return inputType === 'number' || inputType === 'only-letters' || inputType === 'alphanumeric';
   }
 
-  getMask(inputType: ControllerType):RegExp{
+  private getRegex(inputType: ControllerType):RegExp{
     switch (inputType) {
       case 'only-letters':
         return /^[A-Za-z\s]+$/;        
       case 'alphanumeric':
         return /^[A-Za-z0-9\s]+$/;        
       case 'number':
-        return /^[0-9]+$/;        
+        return /^[0-9]+$/;
       case 'financial':
-        return /^[0-9.,]*$/;
+        return /^[1-9][0-9.,]*$/;
       default:
         return /^[A-Za-z0-9\s]+$/;        
     }
   }
 
-  getMaskToCleanInput(inputType: ControllerType):RegExp{          
+  private getRegexToCleanInput(inputType: ControllerType):RegExp{          
     switch (inputType) {
       case 'only-letters':
         return /[^A-Za-z\s]/g;        
@@ -37,5 +38,67 @@ export class InputControllerService {
       default:
         return /^[A-Za-z0-9\s]+$/
     }
+  }
+
+  preventDefaultEvent(value: string, event: InputEvent, formatType: ControllerType){
+    const regex = this.getRegex(formatType);
+
+    if (!regex.test(value)) {
+      event.preventDefault();
+      (event.target as HTMLInputElement).value = (event.target as HTMLInputElement).value.slice(0, -1);
+    }
+  }
+
+  clearAfterPasteOrFocusOut(input: HTMLInputElement, formatType: ControllerType, control: NgControl):void{
+    const validationRegex: RegExp = this.getRegex(formatType);
+    const isAllowedValue = validationRegex.test(input.value);
+    
+    if(!isAllowedValue) this.sanitizeInput(input, formatType, control);    
+  }
+
+  private sanitizeInput(input: HTMLInputElement, formatType: ControllerType, control: NgControl){
+    const originalValue = input.value;
+    const regex: RegExp = this.getRegexToCleanInput(formatType);
+
+    if(formatType == 'financial'){
+      const sanitizeValue = originalValue.replace(regex, '');
+
+      if(sanitizeValue && sanitizeValue.length > 0){
+        const onlyNumbers = sanitizeValue.replaceAll(',', '').trim();
+        const decimals = (parseFloat(onlyNumbers)).toFixed(2);
+        const financial = this.addThousandSeparators(decimals);
+        this.setValueInControl(financial, input, control);
+      }else{
+        this.setValueInControl('0.00', input, control);
+      }
+    }else{
+      const sanitizedText = originalValue.replace(regex, '');
+      this.setValueInControl(sanitizedText, input, control);
+    }
+  }
+
+  financialFormat(input: HTMLInputElement, event: InputEvent):void{
+    const value = input.value;
+    const rawValue = value.replace(/\D/g, '').replace(/^0+/, '');
+    
+    if (rawValue && value.length <= 16) input.value = this.formatToDecimalWithCommas(rawValue);
+    else if(!rawValue) this.setValueInControl('0.00', input);
+    else this.preventDefaultEvent(value, event, 'financial');
+  }
+
+  private formatToDecimalWithCommas(value: string): string {
+    const numberValue = (parseFloat(value) / 100).toFixed(2);
+    return this.addThousandSeparators(numberValue);
+  }
+
+  private addThousandSeparators(value: string): string {
+    const parts = value.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+  }
+
+  setValueInControl(value: string, input: HTMLInputElement, control?: NgControl):void{
+    if(control) control.control?.setValue(value);
+    else input.value = value;
   }
 }
