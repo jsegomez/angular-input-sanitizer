@@ -24,7 +24,7 @@ export class InputControllerDirective {
     this.isToPreventDefaultEvent = this.inputCtrllerServ.isToPreventDefaultEvent(this.inputController());
 
     if(this.isToPreventDefaultEvent && value) this.inputCtrllerServ.preventDefaultEvent(value, event, this.inputController());
-    if(this.inputController() == 'financial') this.inputCtrllerServ.financialFormat(inputElement, event);
+    if(this.inputController() == 'financial') this.inputCtrllerServ.financialFormat(inputElement, this.control);
   }
 
   @HostListener('focusout', ['$event'])

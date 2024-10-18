@@ -77,13 +77,15 @@ export class InputControllerService {
     }
   }
 
-  financialFormat(input: HTMLInputElement, event: InputEvent):void{
+  financialFormat(input: HTMLInputElement, control: NgControl ):void{    
+    input.setAttribute('maxlength', 'maxlength');
     const value = input.value;
     const rawValue = value.replace(/\D/g, '').replace(/^0+/, '');
     
-    if (rawValue && value.length <= 16) input.value = this.formatToDecimalWithCommas(rawValue);
-    else if(!rawValue) this.setValueInControl('0.00', input);
-    else this.preventDefaultEvent(value, event, 'financial');
+    if (rawValue && rawValue.length <= 16) {
+      const formattedValue = this.formatToDecimalWithCommas(rawValue);
+      this.setValueInControl(formattedValue, input);      
+    }
   }
 
   private formatToDecimalWithCommas(value: string): string {

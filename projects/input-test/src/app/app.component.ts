@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { InputControllerDirective } from '../../../input-controller/src/public-api';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   private formBuilder = inject(FormBuilder);
 
   public formValidator = this.formBuilder.group({
@@ -26,4 +26,10 @@ export class AppComponent {
     alpha: ['', Validators.required],
     financial: ['0.00', [Validators.required]]
   });
+
+  ngOnInit(): void {
+    this.formValidator.valueChanges.subscribe((value) => {
+      console.log(this.formValidator.errors)
+    });
+  }
 }

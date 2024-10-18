@@ -41,7 +41,7 @@
             type="text"
             class="form-control"
             formControlName="financial"
-            inputController="financial"            
+            inputController="financial"
           >
         </div>
 
@@ -56,6 +56,17 @@
     <div class="col">
       <pre>
         {{ formValidator.getRawValue() | json }}
+      </pre>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <pre>
+        {{ formValidator.errors| json }}
       </pre>
     </div>
   </div>
