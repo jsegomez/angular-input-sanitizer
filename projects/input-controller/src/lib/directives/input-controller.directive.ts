@@ -1,7 +1,7 @@
 import { Directive, ElementRef, HostListener, Input, input, OnInit, Optional, Self } from '@angular/core';
 import { ControllerType } from '../intefaces/controller-type.type';
 import { InputControllerService } from '../services/input-controller.service';
-import { FormControl, NgControl } from '@angular/forms';
+import { NgControl } from '@angular/forms';
 
 @Directive({
   selector: '[inputController]',
@@ -31,6 +31,13 @@ export class InputControllerDirective implements OnInit{
     if(this.inputController() == 'financial') this.financialFormat(inputElement, event);
   }
 
+  private preventDefaultEvent(value: string, event: InputEvent, regex: RegExp){
+    if (!regex.test(value)) {
+      event.preventDefault();
+      (event.target as HTMLInputElement).value = (event.target as HTMLInputElement).value.slice(0, -1);
+    }
+  }
+
   @HostListener('focusout', ['$event'])
   onFocusOut(event: FocusEvent): void {
     const inputElement = event.target as HTMLInputElement;
@@ -51,13 +58,6 @@ export class InputControllerDirective implements OnInit{
     this.clearAfterPasteOrFocusOut(inputElement);
   }
 
-  private preventDefaultEvent(value: string, event: InputEvent, regex: RegExp){
-    if (!regex.test(value)) {
-      event.preventDefault();
-      (event.target as HTMLInputElement).value = (event.target as HTMLInputElement).value.slice(0, -1);
-    }
-  }
-
   private clearAfterPasteOrFocusOut(input: HTMLInputElement):void{
     const validationRegex: RegExp = this.inputControllerServ.getMask(this.inputController() || 'alphanumeric');
     const isAllowedValue = validationRegex.test(input.value);
@@ -75,14 +75,14 @@ export class InputControllerDirective implements OnInit{
       if(sanitizeValue && sanitizeValue.length > 0){
         const onlyNumbers = sanitizeValue.replaceAll(',', '').trim();
         const decimals = (parseFloat(onlyNumbers)).toFixed(2);
-        // input.value = this.addThousandSeparators(decimals);
-        this.formControl.control?.setValue(decimals);
+        const financial = this.addThousandSeparators(decimals);
+        this.formControl.control?.setValue(financial);
       }else{
-        input.value = '';
+        this.formControl.control?.setValue('');
       }
     }else{
       const sanitizedText = originalValue.replace(regex, '');
-      input.value = sanitizedText.trim();
+      this.formControl.control?.setValue(sanitizedText.trim());
     }
   }
 
@@ -94,7 +94,6 @@ export class InputControllerDirective implements OnInit{
     if (rawValue && value.length <= 16) input.value = this.formatToDecimalWithCommas(rawValue)
     else this.preventDefaultEvent(value, event, regexNumber);
   }
-
 
   private formatToDecimalWithCommas(value: string): string {
     const numberValue = (parseFloat(value) / 100).toFixed(2);
