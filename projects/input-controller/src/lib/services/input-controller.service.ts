@@ -53,15 +53,15 @@ export class InputControllerService {
     const validationRegex: RegExp = this.getRegex(formatType);
     const isAllowedValue = validationRegex.test(input.value);
     
-    if(!isAllowedValue) this.sanitizeInput(input, formatType, control);    
+    if(!isAllowedValue) this.sanitizeInput(input, formatType, control);
   }
 
   private sanitizeInput(input: HTMLInputElement, formatType: ControllerType, control: NgControl){
     const originalValue = input.value;
-    const regex: RegExp = this.getRegexToCleanInput(formatType);
+    const regex: RegExp = this.getRegexToCleanInput(formatType);    
 
     if(formatType == 'financial'){
-      const sanitizeValue = originalValue.replace(regex, '');
+      const sanitizeValue = originalValue.replace(regex, '');           
 
       if(sanitizeValue && sanitizeValue.length > 0){
         const onlyNumbers = sanitizeValue.replaceAll(',', '').trim();
@@ -77,15 +77,15 @@ export class InputControllerService {
     }
   }
 
-  financialFormat(input: HTMLInputElement, control: NgControl ):void{    
+  financialFormat(input: HTMLInputElement, control: NgControl):void{    
     input.setAttribute('maxlength', 'maxlength');
     const value = input.value;
     const rawValue = value.replace(/\D/g, '').replace(/^0+/, '');
     
-    if (rawValue && rawValue.length <= 16) {
-      const formattedValue = this.formatToDecimalWithCommas(rawValue);
-      this.setValueInControl(formattedValue, input);      
-    }
+    if (rawValue && rawValue.length <= 16) {         
+      const formattedValue = this.formatToDecimalWithCommas(rawValue);      
+      this.setValueInControl(formattedValue, input);
+    }else this.sanitizeInput(input, 'financial', control);
   }
 
   private formatToDecimalWithCommas(value: string): string {
@@ -100,7 +100,7 @@ export class InputControllerService {
   }
 
   setValueInControl(value: string, input: HTMLInputElement, control?: NgControl):void{
-    if(control) control.control?.setValue(value);
-    else input.value = value;
+    if(control) control.control?.setValue(value.trim());
+    else input.value = value.trim();
   }
 }

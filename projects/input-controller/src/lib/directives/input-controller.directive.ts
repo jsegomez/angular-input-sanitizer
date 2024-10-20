@@ -29,20 +29,20 @@ export class InputControllerDirective {
 
   @HostListener('focusout', ['$event'])
   onFocusOut(event: FocusEvent): void {    
-    const inputElement = event.target as HTMLInputElement;
+    const inputElement = event.target as HTMLInputElement;    
     this.inputCtrllerServ.clearAfterPasteOrFocusOut(inputElement, this.inputController(), this.control);
   }
 
   @HostListener('paste', ['$event'])
   onPaste(): void {    
-    const inputElement = this.elementRef.nativeElement as HTMLInputElement;
+    const inputElement = this.elementRef.nativeElement as HTMLInputElement;    
     setTimeout(() => {
       this.inputCtrllerServ.clearAfterPasteOrFocusOut(inputElement, this.inputController(), this.control);
     }, 10);
   }
 
   @HostListener('change', ['$event'])
-  onChange(event: Event): void {    
+  onChange(event: Event): void {        
     const inputElement = event.target as HTMLInputElement;
     this.inputCtrllerServ.clearAfterPasteOrFocusOut(inputElement, this.inputController(), this.control);
   }

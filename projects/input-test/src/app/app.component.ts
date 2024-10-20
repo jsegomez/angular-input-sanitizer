@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit{
+export class AppComponent {
   private formBuilder = inject(FormBuilder);
 
   public formValidator = this.formBuilder.group({
@@ -26,10 +26,4 @@ export class AppComponent implements OnInit{
     alpha: ['', Validators.required],
     financial: ['0.00', [Validators.required]]
   });
-
-  ngOnInit(): void {
-    this.formValidator.valueChanges.subscribe((value) => {
-      console.log(this.formValidator.errors)
-    });
-  }
 }
